@@ -1,36 +1,37 @@
+import argparse
 from pathlib import Path
-from typing import ClassVar
 
-from textual.app import App, ComposeResult
-from textual.widgets import Footer, Header
-
-from shell_stack.hosts_table import HostsTable
-
-# TODO: Stream handler will log to the gui - what is a legit log location?
-from shell_stack.utils import get_logger
-
-logger = get_logger(__name__)
+from shell_stack.shell_stack_app import ShellStackApp
 
 
-class SSHConfigWatcher(App):
-    CSS_PATH = "assets/shell_stack.tcss"
-    BINDINGS: ClassVar[list[tuple[str, str, str]]] = [
-        ("q", "quit", "Quit"),
-    ]
+def main() -> None:
+    parser = argparse.ArgumentParser(description="Shell Stack")
+    parser.add_argument("-c", "--config", type=str, help="Path to SSH config file")
+    parser.add_argument("-t", "--refresh-interval", type=int, help="Refresh interval in seconds")
+    args = parser.parse_args()
 
-    def __init__(self) -> None:
-        super().__init__()
-        self._ssh_config_path = Path.home() / ".ssh" / "config"
+    ssh_config_path = Path(args.config) if args.config else None
+    if ssh_config_path and not ssh_config_path.exists():
+        raise FileNotFoundError(f"SSH config file '{ssh_config_path}' does not exist")  # noqa: TRY003
 
-    def compose(self) -> ComposeResult:
-        yield Header()
-        yield HostsTable(self, self._ssh_config_path)
-        yield Footer()
+    refresh_interval = args.refresh_interval if args.refresh_interval else None
 
-    def on_mount(self) -> None:
-        """Called when the app is mounted."""
-        pass
+    app = ShellStackApp(
+        ssh_config_path=ssh_config_path,
+        refresh_interval=refresh_interval,
+    )
+    # Suspending does not work with inline=True
+    app.run(inline=False)
 
 
 if __name__ == "__main__":
-    SSHConfigWatcher().run(inline=False)
+    # Run using `run shell_stack/main.py`. Add `--dev` to run in dev mode.
+    # For dev mode, run `textual console` in a separate terminal to get the dev logs
+    main()
+
+# TODO: What's the legit way of running the ssh command?
+# TODO: Add tests
+# TODO: Update README and CONTRIBUTING
+#          - mention that we do not support <3.10 because of typehints
+# TODO: Push v1
+# TODO: Add pypi build

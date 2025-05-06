@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional, cast
+from typing import cast
 
 import paramiko
 
@@ -13,10 +13,10 @@ logger = get_logger(__name__)
 class SshHostConfig:
     host: str
     # TODO: See if these should really be optional
-    hostname: Optional[str] = None
-    user: Optional[str] = None
-    port: Optional[int] = None
-    identity_file: Optional[list[str]] = None
+    hostname: str | None = None
+    user: str | None = None
+    port: int | None = None
+    identity_file: list[str] | None = None
 
 
 EXCLUDED_ALIASES: list[str] = ["*"]

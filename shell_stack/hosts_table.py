@@ -13,24 +13,25 @@ logger = get_logger(__name__)
 
 
 class HostsTable(Static, can_focus=True):
-    BINDINGS: ClassVar[list[tuple[str, str, str]]] = [
+    BINDINGS: ClassVar = [
         ("c", "connect()", "Connect"),
     ]
 
-    def __init__(self, app: App, ssh_config_path: Path) -> None:
+    def __init__(self, app: App, ssh_config_path: Path, refresh_interval: int) -> None:
         super().__init__()
         self._hosts_table: DataTable = DataTable(id="hosts-table", cursor_type="row")
         self._timer: Timer | None = None
         self._app = app
         self._ssh_config_path = ssh_config_path
+        self._refresh_interval = refresh_interval
 
     def compose(self) -> ComposeResult:
-        yield Static("Hosts", id="hosts-title-bar")
+        yield Static(f"Hosts ({self._ssh_config_path})", id="hosts-title-bar")
         yield self._hosts_table
 
     def on_mount(self) -> None:
         self._hosts_table.add_columns("Host", "Hostname", "User", "Port", "Identity File", "Ping Status")
-        self._timer = self.set_interval(5, self._update)
+        self._timer = self.set_interval(self._refresh_interval, self._update)
         self._update()
 
     # TODO: Can I use the decorator here to make it more readable?
@@ -69,6 +70,7 @@ class HostsTable(Static, can_focus=True):
                     hostname or "N/A",
                     host_config.user or "N/A",
                     str(host_config.port) if host_config.port else "N/A",
+                    # TODO: Check if the identity files exist
                     ", ".join(host_config.identity_file) if host_config.identity_file else "N/A",
                     f"Reachable ({ping_status} ms)" if ping_status else "Unreachable",
                     key=host_config.host,

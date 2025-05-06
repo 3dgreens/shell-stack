@@ -1,11 +1,10 @@
 import logging
 import subprocess
-from typing import Optional
 
 from textual.logging import TextualHandler
 
 
-def get_logger(name: Optional[str] = None, log_level: int = logging.DEBUG) -> logging.Logger:
+def get_logger(name: str | None = None, log_level: int = logging.DEBUG) -> logging.Logger:
     logging.basicConfig(
         level=log_level,
         format="%(asctime)s - %(levelname)s - %(message)s",
@@ -21,16 +20,16 @@ def get_logger(name: Optional[str] = None, log_level: int = logging.DEBUG) -> lo
 logger = get_logger(__name__)
 
 
-def ping_host(host: str) -> Optional[float]:
+def ping_host(host: str) -> float | None:
     """Ping a host to check if it is reachable and capture the latency."""
 
-    def _parse_simple_time_line(line: str) -> Optional[float]:
+    def _parse_simple_time_line(line: str) -> float | None:
         if "time=" in line:
             latency = line.split("time=")[1].split(" ")[0]
             return float(latency)
         return None
 
-    def _parse_round_trip_line(line: str) -> Optional[float]:
+    def _parse_round_trip_line(line: str) -> float | None:
         if "min/avg/max/stddev" in line:
             stats_part = line.split("=")[1].strip()
             avg_time = stats_part.split("/")[1]
@@ -49,10 +48,13 @@ def ping_host(host: str) -> Optional[float]:
                 latency = _parse_simple_time_line(line)
                 if latency is not None:
                     return latency
+
                 latency = _parse_round_trip_line(line)
                 if latency is not None:
                     return latency
+
                 logger.warning(f"Unknown ping output line: {line}")
+            return None
         else:
             logger.error(f"Ping command failed with return code {result.returncode}.")
             return None
