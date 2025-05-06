@@ -1,0 +1,14 @@
+#keys-table {
+    width: 1fr;
+}
+
+#agent-status {
+    width: 18;
+}
+
+#ssh-agent-title-bar, #hosts-title-bar {
+    height: 1;
+    content-align: center middle;
+    background: darkslategray;
+    color: white;
+}
