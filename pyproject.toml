@@ -17,6 +17,10 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
+dependencies = [
+    "paramiko>=3.5.1",
+    "textual>=3.2.0",
+]
 
 [project.urls]
 Homepage = "https://3dgreens.github.io/shell-stack/"
@@ -32,7 +36,7 @@ dev = [
     "mypy>=0.991",
     "pytest-cov>=4.0.0",
     "ruff>=0.11.5",
-
+    "textual-dev>=1.7.0",
 ]
 
 [build-system]
