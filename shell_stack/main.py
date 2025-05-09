@@ -1,6 +1,8 @@
 import argparse
 from pathlib import Path
 
+from shell_stack.components.host_probe import HostProbe
+from shell_stack.components.ping_wrapper import PingWrapper
 from shell_stack.shell_stack_app import ShellStackApp
 
 
@@ -16,9 +18,13 @@ def main() -> None:
 
     refresh_interval = args.refresh_interval if args.refresh_interval else None
 
+    ping_wrapper = PingWrapper()
+    host_probe = HostProbe(ping_wrapper)
+
     app = ShellStackApp(
         ssh_config_path=ssh_config_path,
         refresh_interval=refresh_interval,
+        host_probe=host_probe,
     )
     # Suspending does not work with inline=True
     app.run(inline=False)
