@@ -1,0 +1,28 @@
+Host server1
+    HostName 192.168.1.10
+    User admin
+    Port 22
+    IdentityFile ~/.ssh/id_rsa_server1
+    ForwardAgent yes
+
+Host dev-machine
+    HostName dev.example.com
+    User developer
+    Port 2222
+    IdentityFile ~/.ssh/id_dev
+    ConnectTimeout 10
+
+Host production
+    HostName prod.example.com
+    User deployer
+    Port 22
+    IdentityFile ~/.ssh/id_prod
+    StrictHostKeyChecking yes
+    LogLevel INFO
+
+Host jumphost
+    HostName jump.example.com
+    User jumper
+    Port 22
+    ProxyCommand ssh bastion.example.com -W %h:%p
+    ServerAliveInterval 60

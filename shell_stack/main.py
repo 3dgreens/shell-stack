@@ -35,8 +35,6 @@ if __name__ == "__main__":
     # For dev mode, run `textual console` in a separate terminal to get the dev logs
     main()
 
-# TODO: What's the legit way of running the ssh command?
-# TODO: Add tests
 # TODO: Update README and CONTRIBUTING
 #          - mention that we do not support <3.10 because of typehints
 # TODO: Push v1
